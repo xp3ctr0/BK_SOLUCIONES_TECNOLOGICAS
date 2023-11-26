@@ -3,19 +3,15 @@ package com.backend.soluciones.tecnologicas.user;
 import java.util.Collection;
 import java.util.List;
 
+import com.backend.soluciones.tecnologicas.tipoDocumento.TipoDocumento;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,8 +25,8 @@ import lombok.NoArgsConstructor;
 @Table(name="users")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long userId;
     @Column(nullable = false, columnDefinition = "varchar(20)")
     private String lastname;
     @Column(nullable = false, columnDefinition = "varchar(20)")
@@ -46,8 +42,13 @@ public class User implements UserDetails {
     private String phone;
     @Column(columnDefinition = "boolean default true")
     private Boolean state;
-    @Column(nullable = false, columnDefinition = "varchar(10)")
-    private String enterprise;
+
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "tipoDocumento", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private TipoDocumento tipoDocumento;
 
     @Enumerated(EnumType.STRING)
     private Role role;

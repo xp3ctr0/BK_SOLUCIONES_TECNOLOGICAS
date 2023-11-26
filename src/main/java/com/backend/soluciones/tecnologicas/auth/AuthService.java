@@ -32,23 +32,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     public AuthResponse login(@RequestBody LoginRequest request) {
-        logger.info(String.valueOf(request));
 
-        var userCompany = userRepository.doLogin(request.getEnterprise(), request.getUsername());
-        logger.info(String.valueOf(userCompany));
-
-        if (userCompany.isEmpty()) {
-            logger.info("ACA");
-//            throw new RequestException("P-401","Usuario no Encontrado!");
-            throw new BusinessException("P-300", HttpStatus.OK, "Usuario no Encontrado!");
-        }
-
-        var pass = userCompany.get(0);
-        var passVerify = passwordEncoder.matches(request.getPassword(), pass[6].toString());
-
-        if (userCompany.isEmpty() || !passVerify) {
-            throw new AuthenticationCredentialsNotFoundException("Invalid Login");
-        }
+        User user = userRepository.findByUsername(request.getUsername())
+                        .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Invalid Login"));
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -57,8 +43,6 @@ public class AuthService {
                 )
         );
 
-//        UserDetails user=userRepository.findByUsername(request.getUsername()).orElseThrow();
-        var user=userRepository.findByUsername(request.getUsername()).orElseThrow();
         String token=jwtService.getToken(user);
         return AuthResponse.builder()
                 .token(token)
@@ -67,6 +51,9 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
+
+        logger.info(String.valueOf(request));
+
         User user = User.builder()
                 .document(request.getDocument())
                 .username(request.getUsername())
@@ -76,14 +63,15 @@ public class AuthService {
                 .address(request.getAddress())
                 .phone(request.getPhone())
                 .role(request.getRole())
+                .tipoDocumento(request.getTipoDocumento())
                 .state(request.getState())
-                .enterprise(request.getEnterprise())
                 .build();
 
         userRepository.save(user);
 
         return AuthResponse.builder()
                 .token(jwtService.getToken(user))
+                .role(String.valueOf(user.getRole()))
                 .build();
 
     }

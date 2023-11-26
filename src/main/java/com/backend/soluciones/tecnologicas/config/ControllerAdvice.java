@@ -5,6 +5,7 @@ import com.backend.soluciones.tecnologicas.exception.BusinessException;
 import com.backend.soluciones.tecnologicas.exception.RequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -17,7 +18,6 @@ public class ControllerAdvice {
                 .code("P-500")
                 .message(ex.getMessage())
                 .build();
-
         return new ResponseEntity<>(error, HttpStatus.OK);
     }
 
@@ -28,7 +28,6 @@ public class ControllerAdvice {
                 .code(ex.getCode())
                 .message(ex.getMessage())
                 .build();
-
         return new ResponseEntity<>(error, HttpStatus.OK);
     }
 
@@ -39,7 +38,16 @@ public class ControllerAdvice {
                 .code(ex.getCode())
                 .message(ex.getMessage())
                 .build();
-
         return new ResponseEntity<>(error, ex.getStatus());
+    }
+
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorDTO> notValidExceptionHandler(MethodArgumentNotValidException ex){
+        ErrorDTO error = ErrorDTO
+                .builder()
+                .code(String.valueOf(ex.getStatusCode().value()))
+                .message(ex.getFieldError().getDefaultMessage())
+                .build();
+        return new ResponseEntity<>(error, ex.getStatusCode());
     }
 }

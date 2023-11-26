@@ -7,9 +7,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 //    Optional<User> findByUsernameAndPasswordAndEnterprise(String username, String password, String enterprise);
-    @Query(value = "SELECT * FROM users u WHERE u.enterprise = :enterprise AND u.username = :username", nativeQuery = true)
-    List<Object[]> doLogin(@Param("enterprise") String enterprise,@Param("username")String username);
+//    @Query(value = "SELECT * FROM users u WHERE u.enterprise = :enterprise AND u.username = :username", nativeQuery = true)
+//    List<Object[]> doLogin(@Param("enterprise") String enterprise,@Param("username")String username);
 }

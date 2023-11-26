@@ -1,6 +1,7 @@
 package com.backend.soluciones.tecnologicas.auth;
 
 import com.backend.soluciones.tecnologicas.user.Role;
+import com.backend.soluciones.tecnologicas.tipoDocumento.TipoDocumento;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,6 @@ public class RegisterRequest {
     String address;
     String phone;
     Role role;
+    TipoDocumento tipoDocumento;
     Boolean state;
-    String enterprise;
 }
